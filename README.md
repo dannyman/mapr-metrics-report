@@ -3,9 +3,15 @@ A Report Tool for MapR which queries the metrics database
 
 The idea is to look at MapR jobs run over the past 24 hours, give a
 quick summary of each, and call out any hosts that showed unusually slow
-or fast performance.  I'm a SysAdmin so I want to get a sense for
-problem hosts.  I think I can expand this a bit more to provide some
-feedback to the devs, like tuning the number of map slots, &c.
+or fast performance.
+
+For each job, the script will compare the average run time of each host
+to the overall average run time.  The script will note when a host found
+is found to be beyond two standard deviations from the overall average.
+
+I'm a SysAdmin so I want to get a sense for problem hosts.  I think I
+can expand this a bit more to provide some feedback to the devs, like
+tuning the number of map slots, &c.
 
 Sample output snippet:
 
