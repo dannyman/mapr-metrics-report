@@ -6,8 +6,8 @@ quick summary of each, and call out any hosts that showed unusually slow
 or fast performance.
 
 For each job, the script will compare the average run time of each host
-to the overall average run time.  The script will note when a host found
-is found to be beyond two standard deviations from the overall average.
+to the overall average run time.  The script will note when a host is
+found to be beyond two standard deviations from the overall average.
 
 I'm a SysAdmin so I want to get a sense for problem hosts.  I think I
 can expand this a bit more to provide some feedback to the devs, like
