@@ -6,11 +6,17 @@ use DBI;
 
 use Time::Duration;
 
+use Getopt::Std;
+
+our($opt_i);
+getopts('i:');
+my $interval = $opt_i || '1 day';
+
 my $dbh = DBI->connect("DBI:mysql:database=metrics", "root");
 
 # Get a list of job_ids
 my @jobs;
-my $sth = $dbh->prepare('select JOB_ID,(TIME_FINISHED-TIME_STARTED),JOB_NAME from JOB where CREATED > date_sub(now(), interval 1 day) and time_finished is not NULL'); 
+my $sth = $dbh->prepare("select JOB_ID,(TIME_FINISHED-TIME_STARTED),JOB_NAME from JOB where CREATED > date_sub(now(), interval $interval) and time_finished is not NULL"); 
 $sth->execute();
 while( my @row = $sth->fetchrow_array() ) {
 	push @jobs, { Job_ID => $row[0], Duration_MS => $row[1], Job_Name => $row[2] };
