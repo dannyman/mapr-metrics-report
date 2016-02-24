@@ -5,6 +5,7 @@ use warnings;
 use DBI;
 
 use Time::Duration;
+use POSIX qw(strftime);
 
 use Getopt::Std;
 
@@ -16,10 +17,18 @@ my $dbh = DBI->connect("DBI:mysql:database=metrics", "root");
 
 # Get a list of job_ids
 my @jobs;
-my $sth = $dbh->prepare("select JOB_ID,(TIME_FINISHED-TIME_STARTED),JOB_NAME from JOB where CREATED > date_sub(now(), interval $interval) and time_finished is not NULL"); 
+my $sth = $dbh->prepare("select JOB_ID,(TIME_FINISHED-TIME_STARTED),JOB_NAME,TIME_SUBMITTED,TIME_STARTED,TIME_FINISHED from JOB where CREATED > date_sub(now(), interval $interval) and time_finished is not NULL"); 
 $sth->execute();
 while( my @row = $sth->fetchrow_array() ) {
-	push @jobs, { Job_ID => $row[0], Duration_MS => $row[1], Job_Name => $row[2] };
+	push @jobs, {
+		Job_ID => $row[0],
+		Duration_MS => $row[1],
+		Job_Name => $row[2],
+		Time_Submitted => $row[3],
+		Time_Started => $row[4],
+		Time_Finished => $row[5],
+	};
+
 }
 
 my $avg = 0;
@@ -30,11 +39,19 @@ foreach my $job_ref (@jobs) {
 	my $job = $job_ref->{Job_ID};
 	my $job_name = $job_ref->{Job_Name};
 	my $duration_ms = $job_ref->{Duration_MS};
+	my $time_submitted = $job_ref->{Time_Submitted};
+	my $time_started = $job_ref->{Time_Started};
+	my $time_finished = $job_ref->{Time_Finished};
 
 	# See: http://answers.mapr.com/answers/167354/view.html
 	$job_name =~ s/^\[\w+\/\w+\]//; # Trim [blahblah/blahblah]
 
 	printf "\nJOB: %s %s\n", $job, $job_name;
+	printf "\n%s\tSUBMIT: %s\tSTART: %s\tEND: %s\n",
+		strftime("%Y-%m-%d", localtime($time_submitted/1000)),
+		strftime("%H:%M", localtime($time_submitted/1000)),
+		strftime("%H:%M", localtime($time_started/1000)),
+		strftime("%H:%M", localtime($time_finished/1000));
 	printf "%-40s %10s\n", "TOTAL TIME:", concise(duration($duration_ms/1000));
 
 	$sth = $dbh->prepare("select JOB_ID,AVG(TIME_FINISHED - TIME_STARTED) as 'MS',STD(TIME_FINISHED - TIME_STARTED) as 'STD' from TASK_ATTEMPT where JOB_ID = '$job' and TYPE = 'MAP' and STATUS='SUCCEEDED' group by JOB_ID");
