@@ -17,8 +17,8 @@ Sample output snippet:
 
 ```
 JOB: job_201510281311_0649 com.example.NameOfJob
-
-TOTAL TIME:                                  13m29s
+SUBMITTED AT:                            2016-02-24  09:50
+TOTAL TIME:                                  13m29s  09:50  10:03
 MAP AVERAGE:                                    55s
                c24-mtv-04-27.example.com       6m7s <-- SLOW HOST!
                c24-mtv-04-39.example.com      6m23s <-- SLOW HOST!

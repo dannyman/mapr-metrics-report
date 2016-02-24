@@ -47,12 +47,13 @@ foreach my $job_ref (@jobs) {
 	$job_name =~ s/^\[\w+\/\w+\]//; # Trim [blahblah/blahblah]
 
 	printf "\nJOB: %s %s\n", $job, $job_name;
-	printf "\n%s\tSUBMIT: %s\tSTART: %s\tEND: %s\n",
+	printf "%-40s %10s %6s\n", "SUBMITTED AT:",
 		strftime("%Y-%m-%d", localtime($time_submitted/1000)),
-		strftime("%H:%M", localtime($time_submitted/1000)),
+		strftime("%H:%M", localtime($time_submitted/1000));
+	printf "%-40s %10s %6s %6s\n", "TOTAL TIME:",
+		concise(duration($duration_ms/1000)),
 		strftime("%H:%M", localtime($time_started/1000)),
 		strftime("%H:%M", localtime($time_finished/1000));
-	printf "%-40s %10s\n", "TOTAL TIME:", concise(duration($duration_ms/1000));
 
 	$sth = $dbh->prepare("select JOB_ID,AVG(TIME_FINISHED - TIME_STARTED) as 'MS',STD(TIME_FINISHED - TIME_STARTED) as 'STD' from TASK_ATTEMPT where JOB_ID = '$job' and TYPE = 'MAP' and STATUS='SUCCEEDED' group by JOB_ID");
 	$sth->execute();
