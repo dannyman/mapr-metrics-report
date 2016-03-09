@@ -17,7 +17,7 @@ my $dbh = DBI->connect("DBI:mysql:database=metrics", "root");
 
 # Get a list of job_ids
 my @jobs;
-my $sth = $dbh->prepare("select JOB_ID,(TIME_FINISHED-TIME_STARTED),JOB_NAME,TIME_SUBMITTED,TIME_STARTED,TIME_FINISHED from JOB where CREATED > date_sub(now(), interval $interval) and time_finished is not NULL"); 
+my $sth = $dbh->prepare("select JOB_ID,(TIME_FINISHED-TIME_STARTED),JOB_NAME,TIME_SUBMITTED,TIME_STARTED,TIME_FINISHED from JOB where CREATED > date_sub(now(), interval $interval) and time_finished is not NULL order by (TIME_FINISHED - TIME_STARTED) DESC"); 
 $sth->execute();
 while( my @row = $sth->fetchrow_array() ) {
 	push @jobs, {
